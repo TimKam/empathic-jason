@@ -1,0 +1,6 @@
+.gradle/
+.idea/
+bin/
+lib/
+.DS_STORE
+argumentationServer/target/

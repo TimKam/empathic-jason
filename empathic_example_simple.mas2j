@@ -1,0 +1,11 @@
+/*
+Basic implementation of empathic agents with Jason
+*/
+
+MAS empathic_example_simple {
+
+    infrastructure: Centralised
+
+    agents: persuader; mitigator;
+
+}
