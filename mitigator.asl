@@ -15,9 +15,9 @@ is_acceptable(PersuaderAction, MitigatorAction) :-
 /* wait for persuader's utility mapping
    respond with own mapping
    compute compromise */
-+announce(utility, ReceivedUtility)[source(A)] <- .print("Received utility mapping: ", ReceivedUtility)
++announce(utility, ReceivedUtility)[source(Source)] <- .print("Received utility mapping: ", ReceivedUtility)
     .findall(benefit(X, Y), benefit(X, Y), OwnUtility)
-    .send(A, tell, respond(OwnUtility))
+    .send(Source, tell, respond(OwnUtility))
     for (.member(Revenue, ReceivedUtility)) {
         +Revenue
     }
@@ -64,16 +64,16 @@ is_acceptable(PersuaderAction, MitigatorAction) :-
 /* wait for persuader's compromise suggestion
    approve/disapprove suggestions
    print action acknowledgement/disapproval */
-+propose(action, ReceivedAction)[source(A)] <-
++propose(action, ReceivedAction)[source(Source)] <-
     .wait({+actionApproved(_)})
     .findall(Name, approvedAction(Name), ApprovedActions)
     .nth(0, ApprovedActions, ApprovedAction)
     if (ReceivedAction == ApprovedAction) {
         .print("Approve proposal for executing: ", ReceivedAction);
-        .send(A, tell, approve(ReceivedAction))
+        .send(Source, tell, approve(ReceivedAction))
     } else {
         .print("Disapprove proposal for executing: ", ReceivedAction)
         .print("Expected action: ", ApprovedAction);
-        .send(A, tell, disapprove(ReceivedAction))
+        .send(Source, tell, disapprove(ReceivedAction))
     }.
 

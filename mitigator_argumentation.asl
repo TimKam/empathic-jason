@@ -24,10 +24,10 @@ does_exist(Name) :-
 /* wait for persuader's utility mapping
    respond with own mapping
    compute compromise */
-+announce(utility, ReceivedUtility)[source(A)] <- .print("Received utility mapping: ", ReceivedUtility)
++announce(utility, ReceivedUtility)[source(Source)] <- .print("Received utility mapping: ", ReceivedUtility)
     .findall(benefit(X, Y), benefit(X, Y), OwnUtility);
     +firstReponse("")
-    .send(A, tell, respond(OwnUtility))
+    .send(Source, tell, respond(OwnUtility))
     for (.member(Revenue, ReceivedUtility)) {
         +Revenue
     }
@@ -74,7 +74,7 @@ does_exist(Name) :-
 /* wait for persuader's compromise suggestion
    approve/disapprove suggestions
    print action acknowledgement/disapproval */
-+propose(action, ReceivedAction)[source(A)] <-
++propose(action, ReceivedAction)[source(Source)] <-
     if(firstReponse(_)) {
         .wait({+awaitProposal(_)});
         -awaitProposal("");
@@ -84,39 +84,12 @@ does_exist(Name) :-
     .nth(0, ApprovedActions, ApprovedAction)
     if (ReceivedAction == ApprovedAction) {
         .print("Approve proposal for executing: ", ReceivedAction);
-        .send(A, tell, approve(ReceivedAction))
+        .send(Source, tell, approve(ReceivedAction))
     } else {
         .print("Disapprove proposal for executing: ", ReceivedAction)
         .print("Expected action: ", ApprovedAction);
         // send own attacks and rules
         .findall(acceptable(X, Y), acceptable(X, Y), AcceptabilityRules)
         .findall(attack(X, Y), attack(X, Y), Attacks)
-        .send(A, tell, disapprove(AcceptabilityRules, Attacks, ApprovedAction));
+        .send(Source, tell, disapprove(AcceptabilityRules, Attacks, ApprovedAction));
     }.
-/*
-+!start <-  .findall(attack(X, Y), attack(X, Y), Attacks)
-    for (.member(Attack, Attacks)) {
-        .findall(Argument, attack(Target, Argument), Names)
-        .nth(0, Names, Name)
-        .findall(Target, attack(Target, Argument), Targets)
-        .nth(0, Targets, Target)
-        if(does_exist(Name)) {
-            .findall(OldTargetsList, argument(Name, OldTargetsList), OldTargetsList)
-            .nth(0, OldTargetsList, OldTargets)
-            .concat(OldTargets, [Target], NewTargets);
-            -argument(Name, OldTargets);
-            +argument(Name, NewTargets)
-        } else {
-            +argument(Name, [Target])
-        }
-        if(not does_exist(Target)) {
-            +argument(Target, [])
-        }
-    }
-    .findall([X, Y], argument(X, Y), Arguments)
-    .print("Arguments: ", Arguments)
-    empathy.solve_argument(Arguments, Resolution)
-    .print("Remove successfully attacked acceptability rules: ", Resolution)
-    for(.member(InvalidAttack, Resolution)) {
-        -acceptable(InvalidAttack)
-    }.*/
