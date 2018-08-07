@@ -9,28 +9,28 @@ At the 6th International Workshop on Engineering Multi-Agent System (EMAS), we i
 In their basic version, our empathic agents consider exactly one specific moment, at which each of them can execute a finite set of actions.
 Each action can potentially affect the utility of the executing agent, as well as of all other agents.
 
-The agents follow a combine utility-based/rule-based approach to decide upon the actions each agent should execute:
+The agents follow a combined utility-based/rule-based approach to decide upon the actions each agent should execute:
 
 *   They construct a utility function for each agent that maps all possible action sets (of all agents) to a numeric utility value.
     To ensure the utility mappings of different agents are comparable and that consensus can be reached, a *shared value system* is required.
     If there is no activity set that optimizes all agents' utility functions, a *conflict of interests* is detected. 
 
-*   If a conflict of interests exists, each agent applies a set of acceptability rules that determine whether a conflicting action set is indeed not acceptable or whether the agent is allowed to execute it despite the conflict (however, the agent will only do so if it makes sense; see below).
+*   If a conflict of interests exists, each agent applies a set of acceptability rules that determine whether a conflicting action set is indeed not acceptable or whether the agent is allowed to execute this action despite the conflict (however, the agent will only do so if this makes sense; see below).
     If the actions are not acceptable (or acceptable, but not chosen to be executed), the agents can:
     
     *   Choose the actions that maximize their combined utility.
         This approach does not always lead to the best acceptable solution possible, because the agents never consider action sets that do not optimize their own utility, but are better than the compromise.
         Hence, agents that follow this approach can be referred to as *lazy empathic agents*.
-        The *lazy* approach reduces worst case complexity, as it avoids iterating through action sets that are neither *egoistically optimal* (considering all agents execute actions the agent in focus prefers) and *combined-utility optimal.*.
+        The *lazy* approach reduces worst case complexity, as it avoids iterating through action sets that are neither *egoistically optimal* (considering all agents execute actions the agent in focus prefers), nor *combined-utility optimal*.
 
-    *   Select the next best set of actions, considering one's individual utility and check for conflicts and acceptability.
+    *   Select the next best set of actions, considering one's individual utility and repeat the check for conflicts and acceptability.
         This approach ensures the utility outcome for the agent is the best acceptable outcome possible.
         Hence, we refer to agents that follow this approach as *full empathic agents*.
         The downside of this approach is that in the worst case, it requires re-iterating through all action sets that offer better own utility than the action set that provides maximal combined utility before settling on the latter.
 
     Game theoretical considerations need to be made to determine if an agent should in fact execute a acceptable, but conflicting action: if one agent executes a set of acceptable, but conflicting actions, given that another agent does the same, the resulting utility for both could be worse than the compromise or than a different set of conflicting, but acceptable actions.
     However, in the context of our Jason implementation we focus on *two agent, one actor* scenarios.
-    In these scenarios, these considerations do not need to be made, as the non-acting agent has no action set to adjust as a reaction to the acting agent.
+    In these scenarios, such considerations do not need to be made, as the non-acting agent has no action set to adjust as a reaction to the acting agent.
     Hence, we do not cover these game theoretical aspects in detail here.
 
 The notion of acceptability rules in case of conflicts is introduced to reflect a human-like approach to empathic behavior that does not encompass combined utility optimization in all cases.
@@ -41,7 +41,7 @@ To cover multiple discrete (or discretized) time steps, the concepts can be impl
 Analogously, the concepts can be extended in different directions, for example by adding argumentation capabilities to find consensus if agents have inconsistent beliefs, as the advanced example in this repository demonstrates.
 
 ## Requirements
-As Jason is Java-based, you will need Java (8 or later), as well as [Maven](https://maven.apache.org/) (3.3 or later) and [Gradle](https://gradle.org/) (4.5. or later).
+As Jason is Java-based, you will need Java (8 or later), as well as [Maven](https://maven.apache.org/) (3.3 or later) and [Gradle](https://gradle.org/) (4.5. or later) to run the examples.
 Follow the instructions in the [Jason documentation](https://github.com/jason-lang/jason/blob/master/doc/tutorials/getting-started/readme.adoc#installation-and-configuration) to install and configure Jason.
 If you are using Windows, you will need a Bash emulator for running the advanced example.
 
@@ -72,7 +72,7 @@ To run the **advanced** example, proceed as follows:
 5.  Finally, run the agents by executing ``jason empathic_example_argumentation.mas2j``.
 
 ## Jason extension
-The repository contains a Jason extension that enables the agents to resolve arguments by applying argumentation theory [4], using the argumentation reasoning capabilities of the [Tweety library]((http://tweetyproject.org/) [5].
+The repository contains a Jason extension that enables the agents to resolve arguments by applying argumentation theory [4], using the argumentation reasoning capabilities of the [Tweety library](http://tweetyproject.org/) [5].
 The extension is located in the [src](src/) directory.
 The extension architecture is service-oriented in that the argumentation reasoning is handled by a dedicated argumentation server that is accessible by the *local* part of the extension via RESTful HTTP (``GET``) requests.
 The server runs on port ``8080`` on ``localhost``.
@@ -82,7 +82,7 @@ To use the extension, call ``empathy.solve_argument(Arguments, Resolution)``, fo
 
     empathy.solve_argument([argument("a",["b", "c"]), argument("b",["c"]), argument("c",[])]), Resolution)
 
-The solve_argument function then assigns all non-acceptable arguments--in the example: ``["c"]``--to the ``Resolution`` variable.
+The ``solve_argument`` function then assigns all non-acceptable arguments--in the example: ``["c"]``--to the ``Resolution`` variable.
 In argumentation theory, the non-acceptable arguments the extensions determines are all arguments that are not element of a *complete extension*.
     
 ## Example scenarios and implementations
@@ -112,7 +112,7 @@ Both scenarios have the same core properties (the advanced scenario is an extens
             benefit(10, "Show university ad").
             benefit(2, "Show community college ad").
 
-    The utility mappings of the persuader are labeled *revenue*; the mappings of the mitigator are labelled *benefit* to highlight the differences in impact on the agents (economic impact on the persuader; impact on well-being of the individual the mitigator is proxying).
+    The utility mappings of the persuader are labeled *revenue*, while the mappings of the mitigator are labelled *benefit* to highlight the differences in impact on the agents (economic impact on the persuader; impact on well-being of the individual the mitigator is proxying).
     However, we assume that *revenue* and *benefit* are measured in comparable units.
     Each agent starts with its own utility mapping in their *belief base*.
     The utility mapping of the other agent needs to be received at runtime.
@@ -123,7 +123,7 @@ In the basic example, both agents start with a belief base that contains the fol
     acceptable("Show university ad", "Show community college ad").
     acceptable("Show community college ad", "Show university ad").
 
-First, the persuader sends its utility mappings to the mitigator and receives the mitigator's utility mapping in response.
+First, the persuader sends its utility mappings to the mitigator and receives the mitigator's utility mappings in response.
 Then, the persuader determines the action it will propose to execute.
 It first selects the action that maximizes its own utility (``Show vodka ad``) and checks if it conflicts with the other agent's preferred action (``Show university ad``).
 After determining the apparent conflict, the agent queries the acceptability rule base to determine whether the preferred action is acceptable even in the case of conflict.
