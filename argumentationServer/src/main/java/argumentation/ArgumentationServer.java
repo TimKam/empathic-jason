@@ -3,16 +3,22 @@ package main.java.argumentation;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
+import java.util.Collection;
 
 import com.google.gson.*;
 import fi.iki.elonen.NanoHTTPD;
 
-import net.sf.tweety.arg.dung.CompleteReasoner;
-import net.sf.tweety.arg.dung.DungTheory;
+import net.sf.tweety.arg.dung.reasoner.AbstractExtensionReasoner;
+import net.sf.tweety.arg.dung.reasoner.SimpleCompleteReasoner;
+import net.sf.tweety.arg.dung.reasoner.SimpleGroundedReasoner;
+import net.sf.tweety.arg.dung.reasoner.SimpleIdealReasoner;
+import net.sf.tweety.arg.dung.reasoner.SimplePreferredReasoner;
+import net.sf.tweety.arg.dung.reasoner.SimpleStableReasoner;
+import net.sf.tweety.arg.dung.reasoner.SimpleSemiStableReasoner;
 import net.sf.tweety.arg.dung.semantics.Extension;
 import net.sf.tweety.arg.dung.syntax.Argument;
 import net.sf.tweety.arg.dung.syntax.Attack;
+import net.sf.tweety.arg.dung.syntax.DungTheory;
 import net.sf.tweety.logics.pl.sat.Sat4jSolver;
 import net.sf.tweety.logics.pl.sat.SatSolver;
 
@@ -33,10 +39,38 @@ public class ArgumentationServer extends NanoHTTPD {
         }
     }
 
+    private enum ExtensionType {
+        complete, ground, ideal, stable, semiStable, preferred;
+    }
+
+    private static Collection<Extension> getExtensions (String sExtensionType, DungTheory theory) {
+        if(sExtensionType == null) {
+            sExtensionType = "preferred";
+        }
+        System.out.println("Extension type: " + sExtensionType);
+        ExtensionType extensionType = ExtensionType.valueOf(sExtensionType);
+        switch (extensionType) {
+            case complete:
+                return new SimpleCompleteReasoner().getModels(theory);
+            case ground:
+                return new SimpleGroundedReasoner().getModels(theory);
+            case ideal:
+                return new SimpleIdealReasoner().getModels(theory);
+            case stable:
+                return new SimpleStableReasoner().getModels(theory);
+            case semiStable:
+                return new SimpleSemiStableReasoner().getModels(theory);
+            case preferred:
+            default:
+                return new SimplePreferredReasoner().getModels(theory);
+        }
+    }
+
     @Override
     public Response serve(IHTTPSession session) {
         DungTheory theory = new DungTheory();
         Map<String, String> params = session.getParms();
+        String extensionType = params.remove("extensionType");
         Map<String, Argument> arguments = new HashMap<>();
         for (Map.Entry<String, String> param : params.entrySet()) {
             String argumentId = param.getKey();
@@ -60,18 +94,20 @@ public class ArgumentationServer extends NanoHTTPD {
         System.out.println();
 
         SatSolver.setDefaultSolver(new Sat4jSolver());
+        System.out.println("Extension type: " + extensionType);
+        Collection<Extension> extensions = getExtensions(extensionType, theory);
+        System.out.println("Extensions, type " + extensionType + ": " + extensions);
 
-        Set<Extension> completeExtensions = new CompleteReasoner(theory).getExtensions();
-        JsonArray jCompleteExtensions = new JsonArray();
-        for (Extension extension : completeExtensions) {
+        JsonArray jExtensions = new JsonArray();
+        for (Extension extension : extensions) {
             JsonArray jExtension = new JsonArray();
             for (Argument argument : extension) {
                 jExtension.add(argument.toString());
             }
-            jCompleteExtensions.add(jExtension);
+            jExtensions.add(jExtension);
         }
-        System.out.println("Complete extensions: " + completeExtensions);
+        System.out.println("Extensions, type " + extensionType + ": " + extensions);
 
-        return newFixedLengthResponse(jCompleteExtensions.toString());
+        return newFixedLengthResponse(jExtensions.toString());
     }
 }
