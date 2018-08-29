@@ -83,7 +83,7 @@ To use the extension, call ``empathy.solve_argument(Arguments, Resolution)``, fo
     empathy.solve_argument([argument("a",["b", "c"]), argument("b",["c"]), argument("c",[])]), Resolution)
 
 The ``solve_argument`` function then assigns all non-acceptable arguments--in the example: ``["c"]``--to the ``Resolution`` variable.
-In argumentation theory, the non-acceptable arguments the extensions determines are all arguments that are not element of a *complete extension*.
+In argumentation theory, the non-acceptable arguments the extensions determines are all arguments that are not element of a *preferred extension*.
     
 ## Example scenarios and implementations
 In this repository, we provide two example scenario implementations of empathic Jason agents.
@@ -163,7 +163,7 @@ It sends its attack to the persuader, who then constructs an argumentation frame
 
 *   Further arguments can be added as attacks to *attack*-type arguments.
 
-Using the argumentation extension, the persuader resolves the argumentation framework: it determines all *complete extensions* and removes all arguments (*attacks* or *acceptability rules*) that are not element of any of the complete extensions from its belief base.
+Using the argumentation extension, the persuader resolves the argumentation framework: it determines all *preferred extensions* and removes all arguments (*attacks* or *acceptability rules*) that are not element of any of the preferred extensions from its belief base.
 The attack ``attack("Show vodka ad", "Alcoholic")`` successfully attacks all inconsistent acceptability rules (rules the persuader has, but the mitigator has not).
 The persuader now re-determines the to-be-proposed actions, considering the updated belief base.
 The action it determines this time is ``Show university ad``.
