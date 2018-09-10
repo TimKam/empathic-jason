@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Collection;
+import java.util.Collections;
 
 import com.google.gson.*;
 import fi.iki.elonen.NanoHTTPD;
@@ -45,7 +46,7 @@ public class ArgumentationServer extends NanoHTTPD {
 
     private static Collection<Extension> getExtensions (String sExtensionType, DungTheory theory) {
         if(sExtensionType == null) {
-            sExtensionType = "preferred";
+            sExtensionType = "ideal";
         }
         System.out.println("Extension type: " + sExtensionType);
         ExtensionType extensionType = ExtensionType.valueOf(sExtensionType);
@@ -54,15 +55,32 @@ public class ArgumentationServer extends NanoHTTPD {
                 return new SimpleCompleteReasoner().getModels(theory);
             case ground:
                 return new SimpleGroundedReasoner().getModels(theory);
-            case ideal:
-                return new SimpleIdealReasoner().getModels(theory);
+            case preferred:
+                return new SimplePreferredReasoner().getModels(theory);
             case stable:
                 return new SimpleStableReasoner().getModels(theory);
             case semiStable:
                 return new SimpleSemiStableReasoner().getModels(theory);
-            case preferred:
+            case ideal:
             default:
-                return new SimplePreferredReasoner().getModels(theory);
+                Collection<Extension> preferredExtensions = new SimplePreferredReasoner().getModels(theory);
+                Extension idealExtension = new Extension();
+                Extension preferredExtension = preferredExtensions.iterator().next();
+                for (Argument arg : preferredExtension) {
+                    Boolean isIdeal = true;
+                    for (Extension ext : preferredExtensions) {
+                        if(!ext.contains(arg)) {
+                            isIdeal = false;
+                            break;
+                        }
+
+                    }
+                    if(isIdeal) {
+                        idealExtension.add(arg);
+                    }
+                }
+                Collection<Extension> idealExtensions = Collections.singletonList(idealExtension);
+                return idealExtensions;
         }
     }
 
