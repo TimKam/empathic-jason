@@ -169,6 +169,9 @@ The persuader now re-determines the to-be-proposed actions, considering the upda
 The action it determines this time is ``Show university ad``.
 The mitigator approves the action, so that the persuader can execute it.
 
+## Acknowledgements
+This work was partially supported by the Wallenberg AI, Autonomous Systems and Software Program (WASP) funded by the Knut and Alice Wallenberg Foundation.
+
 ## References
 *   [1] R. H. Bordini, J. F. Hübner, and M. Wooldridge, Programming Multi-Agent Systems in AgentSpeak Using Jason (Wiley Series in Agent Technology). USA: John Wiley & Sons, Inc., 2007.
 
