@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/142349485.svg)](https://zenodo.org/record/2585805)
+
 # Empathic Jason agents - examples
 **Author**: [Timotheus Kampik](https://github.com/TimKam)
 
